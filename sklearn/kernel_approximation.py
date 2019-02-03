@@ -213,10 +213,11 @@ class SkewedChi2Sampler(BaseEstimator, TransformerMixin):
         n_features = X.shape[1]
         uniform = random_state.uniform(size=(n_features, self.n_components))
         # transform by inverse CDF of sech
-        self.random_weights_ = (1. / np.pi
-                                * np.log(np.tan(np.pi / 2. * uniform)))
+        self.random_weights_ = (
+            1. / np.pi * np.log(np.tan(np.pi / 2. * uniform))
+        )
         self.random_offset_ = random_state.uniform(0, 2 * np.pi,
-                                                   size=self.n_components)
+                                                    size=self.n_components)
         return self
 
     def transform(self, X):
@@ -394,8 +395,9 @@ class AdditiveChi2Sampler(BaseEstimator, TransformerMixin):
         step_nz = 2 * X_nz * self.sample_interval_
 
         for j in range(1, self.sample_steps):
-            factor_nz = np.sqrt(step_nz /
-                                np.cosh(np.pi * j * self.sample_interval_))
+            factor_nz = np.sqrt(
+                step_nz / np.cosh(np.pi * j * self.sample_interval_)
+            )
 
             X_step = np.zeros_like(X)
             X_step[non_zero] = factor_nz * np.cos(j * log_step_nz)
@@ -420,8 +422,9 @@ class AdditiveChi2Sampler(BaseEstimator, TransformerMixin):
         step_nz = 2 * X.data * self.sample_interval_
 
         for j in range(1, self.sample_steps):
-            factor_nz = np.sqrt(step_nz /
-                                np.cosh(np.pi * j * self.sample_interval_))
+            factor_nz = np.sqrt(
+                step_nz / np.cosh(np.pi * j * self.sample_interval_)
+            )
 
             data_step = factor_nz * np.cos(j * log_step_nz)
             X_step = sp.csr_matrix((data_step, indices, indptr),
@@ -616,9 +619,11 @@ class Nystroem(BaseEstimator, TransformerMixin):
                 if getattr(self, param) is not None:
                     params[param] = getattr(self, param)
         else:
-            if (self.gamma is not None or
-                    self.coef0 is not None or
-                    self.degree is not None):
+            if (
+                self.gamma is not None
+                or self.coef0 is not None
+                or self.degree is not None
+            ):
                 raise ValueError("Don't pass gamma, coef0 or degree to "
                                  "Nystroem if using a callable kernel.")
 
