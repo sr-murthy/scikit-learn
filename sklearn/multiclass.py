@@ -100,8 +100,7 @@ def _predict_binary(estimator, X):
 
 def _check_estimator(estimator):
     """Make sure that an estimator implements the necessary methods."""
-    if (not hasattr(estimator, "decision_function") and
-            not hasattr(estimator, "predict_proba")):
+    if not (hasattr(estimator, "decision_function") or hasattr(estimator, "predict_proba")):
         raise ValueError("The base estimator should implement "
                          "decision_function or predict_proba!")
 
@@ -258,8 +257,8 @@ class OneVsRestClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin):
 
         if len(np.setdiff1d(y, self.classes_)):
             raise ValueError(("Mini-batch contains {0} while classes " +
-                             "must be subset of {1}").format(np.unique(y),
-                                                             self.classes_))
+                             "must be subset of {1}").format(
+                             np.unique(y),self.classes_))
 
         Y = self.label_binarizer_.transform(y)
         Y = Y.tocsc()
@@ -552,12 +551,12 @@ class OneVsOneClassifier(BaseEstimator, ClassifierMixin, MetaEstimatorMixin):
         X, y = check_X_y(X, y, accept_sparse=['csr', 'csc'])
         check_classification_targets(y)
         combinations = itertools.combinations(range(self.n_classes_), 2)
-        self.estimators_ = Parallel(
-            n_jobs=self.n_jobs)(
-                delayed(_partial_fit_ovo_binary)(
-                    estimator, X, y, self.classes_[i], self.classes_[j])
-                for estimator, (i, j) in zip(self.estimators_,
-                                              (combinations)))
+        self.estimators_ = Parallel(n_jobs=self.n_jobs)(
+            delayed(_partial_fit_ovo_binary)(
+                estimator, X, y, self.classes_[i], self.classes_[j]
+            )
+            for estimator, (i, j) in zip(self.estimators_,(combinations))
+        )
 
         self.pairwise_indices_ = None
 
